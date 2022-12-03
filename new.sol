@@ -4,6 +4,7 @@ pragma solidity 0.8.7;
 
 contract Token {
     uint public _totalSupply = 1000000e15;
+    address public owner;
 
     mapping(address => uint) public _balanceOf;
     mapping(address => mapping(address => uint)) public _allowance;
@@ -13,8 +14,11 @@ contract Token {
     string public symbol = "NT";
     uint8 public decimal = 18;
 
+    constructor() {
+        owner = msg.sender;
+    }
 
-    function blacklisted(address _address, address owner) external returns(bool) {
+    function blacklisted(address _address) external returns(bool) {
         require(msg.sender == owner, "should be owner");
         require(!_blacklist[_address], "blacklisted");
         _blacklist[_address] = true;
@@ -37,8 +41,8 @@ contract Token {
         return true;
     }
 
-    function allowance(address owner, address spender) external view returns(uint) {
-        return _allowance[owner][spender];
+    function allowance(address _owner, address spender) external view returns(uint) {
+        return _allowance[_owner][spender];
     }
 
     function mint() public { 
