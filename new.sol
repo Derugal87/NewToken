@@ -4,24 +4,20 @@ pragma solidity 0.8.7;
 
 contract Token {
     uint public _totalSupply = 1000000e15;
-    address owner;
 
     mapping(address => uint) public _balanceOf;
     mapping(address => mapping(address => uint)) public _allowance;
+    mapping(address => bool) public _blacklist;
 
     string public name = "NewToken";
     string public symbol = "NT";
     uint8 public decimal = 18;
 
-    constructor() {
-        owner = msg.sender;
-        // address that deploys contract will be the owner 
-    }
 
-    function blacklist(address _address) external returns(bool) {
-        require(owner = msg.sender, "should be owner");
-        require(!blacklist[_address], "already blacklisted");
-        blacklist[_address] = true;
+    function blacklisted(address _address, address owner) external returns(bool) {
+        require(msg.sender == owner, "should be owner");
+        require(!_blacklist[_address], "blacklisted");
+        _blacklist[_address] = true;
         return true;
     }
 
@@ -34,7 +30,7 @@ contract Token {
     }
 
     function transfer(address recipient, uint amount) external returns(bool) {
-        require(!blacklist[recipient], "already blacklisted");
+        require(!_blacklist[recipient], "already blacklisted");
         _balanceOf[msg.sender] -= amount;
         _balanceOf[recipient] += amount;
         emit Transfer(msg.sender, recipient, amount);
@@ -64,7 +60,5 @@ contract Token {
     }
 
     event Transfer(address indexed from, address indexed to, uint amount);
-
     event Approve(address indexed owner, address indexed spender, uint amount);
-
 }
