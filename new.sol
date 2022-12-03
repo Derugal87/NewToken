@@ -3,7 +3,7 @@
 pragma solidity 0.8.7;
 
 contract Token {
-    uint public _totalSupply = 1000000e15;
+    uint public _totalSupply = 1000000e18;
     address public owner;
 
     mapping(address => uint) public _balanceOf;
@@ -47,6 +47,7 @@ contract Token {
 
     function mint() public { 
         _balanceOf[msg.sender] = 500e18;
+        _totalSupply += _balanceOf[msg.sender];
     }    
     
     function approve(address spender, uint amount) external returns(bool) {
