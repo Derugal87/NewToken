@@ -14,15 +14,21 @@ contract Token {
     string public symbol = "NT";
     uint8 public decimal = 18;
 
+    event Transfer(address indexed from, address indexed to, uint amount);
+    event Approve(address indexed owner, address indexed spender, uint amount);
+
     constructor() {
         owner = msg.sender;
     }
 
-    function blacklisted(address _address) external returns(bool) {
-        require(msg.sender == owner, "should be owner");
+    modifier OnlyOwner() {
+        require(msg.sender == owner, "only owner");
+        _;
+    }
+
+    function blacklisted(address _address) external OnlyOwner {
         require(!_blacklist[_address], "blacklisted");
         _blacklist[_address] = true;
-        return true;
     }
 
     function totalSupply() external view returns(uint) {
@@ -45,9 +51,9 @@ contract Token {
         return _allowance[_owner][spender];
     }
 
-    function mint() public { 
-        _balanceOf[msg.sender] = 500e18;
-        _totalSupply += _balanceOf[msg.sender];
+    function mint(address _account, uint amount) external OnlyOwner { 
+        _balanceOf[_account] += amount;
+        _totalSupply += amount;
     }    
     
     function approve(address spender, uint amount) external returns(bool) {
@@ -63,7 +69,4 @@ contract Token {
         emit Transfer(sender, recipient, amount);
         return true;
     }
-
-    event Transfer(address indexed from, address indexed to, uint amount);
-    event Approve(address indexed owner, address indexed spender, uint amount);
 }
